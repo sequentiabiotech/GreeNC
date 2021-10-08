@@ -19,7 +19,7 @@ group of transcripts being analyzed.
 bash script1/lncRNA_strand.sh --fasta FASTA --output OUTDIR --swissprot BLASTDB --ref GTF [optional]
 ```
 
-##Script 2: discrimination of other ncRNA
+## Script 2: discrimination of other ncRNA
 
 A perl script was written in order to discriminate other non-coding transcripts from long non-coding 
 transcripts and identify miRNA precursor long non-coding transcripts. On one side, transcripts are 
