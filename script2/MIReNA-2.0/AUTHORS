@@ -1,0 +1,8 @@
+MIReNA software has been developed by Anthony Mathelier and Alessandra Carbone.
+
+It uses modified source codes from the ViennaRNA package developped by I.
+Hofacker, P. Stadler, W. Fontana and S. Wuchty (in the folding/ repository),
+from an Approximate String Matching algorithm developped by G. Myers (in the
+asml/ repository) and from the miRDeep package developped by Marc Friedländer
+and Nikolaus Rajewsky (the fromDeepSeq/dicer_processing.pl file). Finally, scripts
+coming from the miRDeep package are used (in the miRDeep/ repository).

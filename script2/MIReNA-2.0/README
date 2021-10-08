@@ -1,0 +1,174 @@
+##########################
+##                      ##
+##  MIReNA version 2.0  ##
+##      02/05/2010      ##
+##                      ##
+##########################
+
+MIReNA can be run in four different ways. It is characterized by specific
+pre-treatments of the different kinds of data that it can handle. It predicts
+miRNA/pre-miRNA pairs based on 5 criteria (see the article) used to filter
+secondary structures. The different kinds of data that MIReNA can handle are:
+1. known miRNAs, 2. deep sequencing data, 3. a set of potential miRNAs occurring 
+in long sequences and 4. putative pre-miRNAs containing potential miRNAs. The
+first two kinds of data may be checked against full genome sequences.
+
+#############################################################################################
+Authors: Anthony Mathelier and Alessandra Carbone
+         Génomique des Microorganismes, FRE3214, CNRS-UPMC
+         anthony.mathelier@gmail.com, alessandra.carbone@lip6.fr
+
+         Refer to the AUTHORS file.
+#############################################################################################
+
+
+#######################
+System requirements:
+#######################
+* MIReNA version 2.0 has been developed under Ubuntu Linux operating system.
+* Perl executable should be installed in the /usr/bin/ directory.
+* Python executable should be installed in the /usr/bin/ directory.
+* The bash environment should be installed.
+* RNAfold should be pre-installed on the operating system and be accessible from
+ the PATH environment variable.
+* If you want to use MIReNA with deep sequencing data, blast2 should be installed
+ on the operating system and be accessible from the PATH environment variable.
+
+########################
+How to compile MIReNA C source codes:
+########################
+To compile C sources useful for MIReNA, type the following commands (you can
+also read the INSTALL file for informations):
+1. cd <repository where this README is>
+2. ./configure
+3. make
+
+########################
+How to excute MIReNA:
+########################
+To know how to execute MIReNA, you can type the following command:
+./MIReNA.sh -h
+Look at the files contained in the repository named "dataset/" for
+examples of input files. Go into the dataset repository and type one of
+the following commands to obtain the corresponding out.txt file:
+* from input 1.: ../MIReNA.sh -M --errors 0
+* from input 2.: ../MIReNA.sh -D -b cel_deep_sequencing/megablastparsed_filtered -f cel_deep_sequencing/454_total.fa -j cel_deep_sequencing/genome_cel.fa -k cel_deep_sequencing/mature_metazoan_no_cel_v14.fa
+* from input 3.: ../MIReNA.sh -p
+* from input 4. without information on potential miRNAs: ../MIReNA.sh -v -x
+* from input 4. with information on potential miRNAs: ../MIReNA.sh -v -y
+
+########################
+Input files:
+########################
+
+1. Using MIReNA from known miRNAs +++
+* When invoking MIReNA from known miRNA sequences, you need two files. A fasta
+  file containing a set of known miRNAs (datatest/miRNAs.fa) and a text file
+  containing a long DNA sequence, possibly a genome (datatest/text.txt). The fasta
+  file contains miRNA sequences that are used by MIReNA to search for similar
+  sequences in the text file. The text file contains the sequence in a single
+  line.
+
+2. Using MIReNA with deep sequencing data +++
+* When invoking MIReNA from deep sequencing data, you need at least three files.
+  The first file contains the deep sequencing data in fasta format with specific
+  naming of the sequences as follows:
+  >seq1_xN
+  ACGT
+  >seq2_xM
+  ACGT
+  ...
+ where seq1 and seq2 denote names of reads and N and M stand for the number of
+ times the corresponding sequences were found in the deep sequencing dataset
+ with 100% fitting.
+ See cel_deep_sequencing/454_total.fa for an example.
+ The second file contains the genome sequence in fasta format. See
+ cel_deep_sequencing/genome.fa for an example.
+ The third file contains known miRNAs to be checked for conservation
+ (nucleotides 2-8). See cel_deep_sequencing/mature_metazoan_no_cel_v14.fa for an
+ example.
+ Notice that you can directly use the output of the script
+ miRDeep/blastoutparsed.pl to avoid doing the blast search again. This file
+ corresponds to a blast search of deep sequencing reads on the genome parsed by
+ the miRDeep script. If the option -b is used, MIReNA will not redo the blast
+ search but use this file to create potential precursors.
+ Example input files are given in repository datatest/cel_deep_sequencing/. All
+ but file mature_metazoan_no_cel_v14.fa have been downloaded from
+ http://www.mdc-berlin.de/rajewsky/miRDeep for miRDeep analysis of C. elegans.
+
+3. Using MIReNA to predict a pre-miRNA within a sequence containing a potential miRNA +++
+* When invoking MIReNA for the predicting algorithm of a putative pre-miRNA
+  containing a miRNA, you need to specify a file containing the sequences 
+  (see input.txt). The file must be in the following format:
+  >seq1 before:x after:t
+  ACGT
+  >seq2 before:y after:u
+  ACGT
+  ...
+  where seq1 and seq2 stand for the respective sequence names, x and y (resp.
+  t and u) stand for the number of nucleotides preceding (resp. following) the
+  miRNA sequences within the longer sequence.
+
+4. Using MIReNA to validate pre-miRNA sequences +++
+* When invoking MIReNA for the validation algorithm of a putative pre-miRNA, you
+  need to specify a fasta file (dataset/preMi.fa) containing the putative pre-miRNA
+  sequences you want to validate. If you do not have any information on potential
+  miRNAs within the sequences, you must use the -y option.
+  If you have the positions of potential miRNAs within the sequences, the fasta
+  file must be formatted following the format below:
+  >seq1 before:x after:t
+  ACGT
+  >seq2 before:y after:u
+  ACGT
+  where seq1 and seq2 stand for the respective sequence names, x and y (resp.
+  t and u) stand for the number of nucleotides preceding (resp. following) the
+  miRNA sequences within putative pre-miRNA sequences.
+
+########################
+Results:
+########################
+* When executing MIReNA algorithm from known miRNA sequences, the output file
+  contains the result in fasta format. The names of the predicted pre-miRNAs
+  follow the format:
+  >[name of the similar know miRNA]_[name of the text file]_[beginning of the potential miRNA in the text]:[length of the miRNA]_[# of nt before the putative miRNA in the predicted pre-miRNA]_[# of nt after the putative miRNA in the predicted pre-miRNA]
+
+* When executing MIReNA algorithm from deep sequencing data, the output file
+  contains predicted pre-miRNAs and miRNAs in fasta format. The description
+  lines of the fasta files follow the format:
+  >[name of the read] [name of the pre-miRNA] begin:[beginning of the miRNA in the pre-miRNA] end:[end of the miRNA in the pre-miRNA]
+  A second output file, named precursors.fa, contains information on the tested 
+  potential pre-miRNAs, i.e. location and strand within the corresponding genome.
+ 
+########################
+Genomic filtering:
+########################
+Output of MIReNA can be filtered to remove pre-miRNAs that overlap CDS, snRNA,
+scRNA, snoRNA, tRNA, rRNA and 21U-RNA.
+The pre-defined genomic locations are given in a GenBank file.
+
+* To filter the predictions obtained by MIReNA from known miRNA sequences, you
+  can use the script filter_gbk.py as follows:
+  ./fromMirnas/filter_gbk.py <predictions> <genbank>
+  where <predictions> stands for the file containing the output of MIReNA and
+  <genbank> stands for the GenBank file. As a result, it prints on standard
+  output the predictions that do not overlap pre-defined genomic locations.
+
+* To filter the predictions obtained by MIReNA from deep sequencing reads, you
+  can use the script fromDeepSeq/filter_predicitions_gbk.py as follows:
+  ./fromDeepSeq/filter_predictions_gbk.py <predictions> <precursors> <genbank>
+  where <predictions> stands for the output file of MIReNA, <precursors> stands
+  for the "precursors.fa" file obtained when running MIReNA and <genbank> stands
+  for the GenBank file. As a result, it prints on standard output the predictions
+  that do not overlap pre-defined genomic locations.
+
+#######################
+Licence:
+########################
+The MIReNA program has been developed under the CeCILL licence (see LICENCE).
+MIReNA uses a modified implementation of RNAfold from the ViennaRNA package
+[Hofacker et al. 1994] and a modified version of the Approximate String Matching
+Algorithm developed by G. Myers [Myers 1999].
+MIReNA also uses scripts coming from the miRDeep package [Friedländer et al. 2008].
+The source code of those scripts are contained in the directory "miRDeep/". The
+original version of miRDeep.pl script from the miRDeep package has been modified
+in MIReNA. The script is found at datatest/fromDeepSeq/dicer_processing.pl.
